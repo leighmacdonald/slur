@@ -16,7 +16,7 @@ type tc struct {
 
 func TestFind(t *testing.T) {
 	cases := []tc{
-		{line: "asdf ape adf", match: "ape", weight: 10},
+		{line: "asdf apes adf", match: "apes", weight: 10},
 		{line: "ashke-nazi asdf asdf ", match: "ashke-nazi", weight: 75},
 		{line: "a sdf adsf ashkenazi asdf", match: "ashkenazi", weight: 75},
 		{line: "a sdf adsf jiggerboo asdf", match: "jiggerboo", weight: 50},
@@ -30,10 +30,10 @@ func TestFind(t *testing.T) {
 			if tc.nomatch && matched {
 				t.Fatalf("expected no match, got match")
 			} else if !matched {
-				t.Fatalf("expected match, got no match")
+				t.Fatalf("expected match, got no match: %s", tc.line)
 			}
-			if result.Weight != tc.weight {
-				t.Fatalf("expected weight %d, got %d", tc.weight, result.Weight)
+			if result.Category != tc.weight {
+				t.Fatalf("expected category %d, got %d", tc.weight, result.Category)
 			}
 			if result.Word != tc.match {
 				t.Fatalf("expected word %s, got %s", tc.match, result.Word)
@@ -47,7 +47,7 @@ func ExampleCheck() {
 	check = slur.NewString(10, "example")
 
 	if match, found := check.Check("this is an example"); found {
-		fmt.Printf("%s %d\n", match.Word, match.Weight)
+		fmt.Printf("%s %d\n", match.Word, match.Category)
 		// Output: example 10
 	}
 }

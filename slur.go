@@ -10,30 +10,26 @@ import (
 
 var (
 	Checkers = []Checker{
-		NewString(50, "nigger", "nig", "ni"),
+		NewString(50, "nigger", "nig", "ni", "darkie", "tar-baby", "tarbaby", "coon"),
 		NewString(50, "fag", "faggot"),
 		NewString(10, "apes"),
-		NewString(50, "tranny", "shemale", "ywnbaw", "troon"),
-		NewString(10, "spic", "wetback"),
-		Regex{regexp.MustCompile(`^apes?$`), 10},       //Referring to outdated theories ascribing cultural differences between racial groups as being linked to their evolutionary distance from chimpanzees, with which humans share common ancestry.
+		NewString(50, "tranny", "shemale", "ywnbaw", "troon", "transtrender"),
+		NewString(10, "spic", "wetback", "spik", "spick"),
+		NewString(10, "chink", "gook"),
+		NewString(10, "half-breed", "halfbreed"),
+		NewString(10, "injun"),
+		NewString(10, "jap", "nip", "slant–eye", "slanteye", "zipperhead"),
+		NewString(10, "jewboy"),
+		NewString(10, "卍", "卐"),
 		Regex{regexp.MustCompile(`^ashke-?nazi$`), 75}, // Pronounced like "AshkeNatzi". Used mostly by Mizrachi Jews.
 		Regex{regexp.MustCompile(`^beaners?$`), 30},
-		Regex{regexp.MustCompile(`^japs?$`), 30},
 		Regex{regexp.MustCompile(`^jiggaboo|jiggerboo|niggerboo|jiggabo|jigarooni|jijjiboo|zigab|jig|jigg|jigger$`), 50},
-		Regex{regexp.MustCompile(`^nigger|niger|nig|nigga|niggress$`), 50},
+		Regex{regexp.MustCompile(`nigger|nigga|niggress$`), 50},
 		Regex{regexp.MustCompile(`^k[iy]ke$`), 50},
 		Regex{regexp.MustCompile(`^yid$`), 30},
 		Regex{regexp.MustCompile(`^paki$`), 30},
 		Regex{regexp.MustCompile(`(fa[g6]+|f[a4][g6]{1,}[o0][t7])s?$`), 50},
-		Regex{regexp.MustCompile(`^chinks?$`), 50},
 		Regex{regexp.MustCompile(`^tr[a4]nn?y?$`), 75},
-		Regex{regexp.MustCompile(`^ni$`), 30},
-		Regex{regexp.MustCompile(`^gooks?$`), 30},
-		Regex{regexp.MustCompile(`^(spic|wetback)s$`), 30},
-		Regex{regexp.MustCompile(`^homos?$`), 30},
-		Regex{regexp.MustCompile(`^wops?$`), 30},
-		Regex{regexp.MustCompile(`^coons?$`), 50},
-		Regex{regexp.MustCompile(`^(shemale|troon)s?$`), 50},
 		Regex{regexp.MustCompile(`^(retards?|retarded)$`), 25},
 	}
 )
@@ -57,34 +53,37 @@ func Check(line string) (Match, bool) {
 }
 
 type Regex struct {
-	pattern *regexp.Regexp
-	weight  int
+	pattern  *regexp.Regexp
+	category int
 }
 
 func (m Regex) Check(word string) (Match, bool) {
 	match := m.pattern.FindStringSubmatch(word)
 	if match != nil {
-		return Match{Word: match[0], Weight: m.weight}, true
+		return Match{Word: match[0], Category: m.category}, true
 	}
 
 	return Match{}, false
 }
 
-func NewString(weight int, patterns ...string) *String {
+func NewString(category int, patterns ...string) *String {
 	return &String{
 		patterns: patterns,
-		weight:   weight,
+		category: category,
 	}
 }
 
+// String handles performing simple string matches.
+//
+// TODO (maybe): Add levenshtein distance option
 type String struct {
 	patterns []string
-	weight   int
+	category int
 }
 
 func (m String) Check(word string) (Match, bool) {
 	if slices.Contains(m.patterns, word) {
-		return Match{Word: word, Weight: m.weight}, true
+		return Match{Word: word, Category: m.category}, true
 	}
 
 	return Match{}, false
@@ -93,8 +92,8 @@ func (m String) Check(word string) (Match, bool) {
 type Match struct {
 	// Word contains the matched word
 	Word string
-	// Weight is a 0-100 score indicating the severity of the slur, 0 being the least severe.
-	Weight int
+	// Category is a value that can be used to group similar terms.
+	Category int
 }
 
 func normalize(text string) string {
