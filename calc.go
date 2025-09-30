@@ -18,7 +18,7 @@ type MessageSource interface {
 type Message interface {
 	UserID() string
 	MessageID() int64
-	Message() string
+	Text() string
 }
 
 type SlurCounts struct {
@@ -51,7 +51,7 @@ func Calc(ctx context.Context, source MessageSource) ([]PlayerCounts, []int64, e
 		}
 
 		for _, result := range results {
-			if match, found := Check(result.Message()); found {
+			if match, found := Check(result.Text()); found {
 				total++
 
 				flaggedMessageIDs = append(flaggedMessageIDs, result.MessageID())
